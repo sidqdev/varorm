@@ -1,6 +1,6 @@
 ## varorm - variables orm with django admin support
 
-#### v0.0.1 - Basic models and Django admin support
+#### v0.1 - Basic models and Django admin support
 #### TODO - refactor django widgets, better type-hints, groups access support
 ## Documentation
 
