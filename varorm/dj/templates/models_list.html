@@ -1,0 +1,36 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block content %}
+
+{% for model_name, model in models%}
+<div style="padding-bottom: 15px;display: flex;justify-content: center;">
+    <div style="display: flex;justify-content: center;width: 70%;border: 1px;border-style: solid;border-radius: 10px;">
+        <table style="width: 80%;margin-bottom: 15px;">
+            <caption><h2>{{ model_name }}</h2></caption>
+            <tr>
+                <th>Field</th>
+                <th>Value</th>
+                <th>Action</th>
+            </tr>
+            {% for field in model %}
+            <tr>
+                <form method="post">
+                    {% csrf_token %}
+                    <input hidden value="{{ model_name }}" id="dj.model_name" name="dj.model_name">
+                    <input hidden value="{{ field.field_key }}" id="dj.field_key" name="dj.field_key">
+                    <td><label for="{{ field.field_key }}">{{ field.verbose_name }}</label></td>
+                    <td>{{ field.widget.input|safe }}</td>
+                    <td>
+                        <input type="submit" class="default" value="Save" style="float: left;">
+                        <!-- <input type="submit" class="delete-confirmation" value="delete" style="float: left;"> -->
+                    </td>
+                </form>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}
