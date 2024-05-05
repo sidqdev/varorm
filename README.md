@@ -25,6 +25,8 @@ print(TestModel().c) # >> VarDoesNotExistException
 
 TestModel().a = 5
 print(TestModel().a) # >> 5
+
+storage.save() # for file base storages
 ```
 
 ## Django-Documentation
@@ -40,6 +42,11 @@ class TestModel(Model):
 ```
 ### settings.py
 ```python3
+INSTALLED_APPS = [
+    ...
+    "varorm.dj",
+    ...
+]
 VARORM_STORAGE = 'varorm.storage.RedisStorage' # import path to storage
 VARORM_STORAGE_CONFIG = {
     "url": "redis://localhost:6379/3"
