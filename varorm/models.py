@@ -8,10 +8,16 @@ from varorm.exceptions import VarDoesNotExistException
 
 class Model:
     class Meta:
-        key = None
+        pass
 
-    def __new__(cls):
+    class _meta:
+        key = None
+        groups = None
+        verbose_name = None
+
+    def __new__(cls, key=None):
         assert cls._storage is not None
+        cls.key = key
 
         cls._fields = {}
         for name, field in inspect.getmembers(cls):
@@ -22,8 +28,19 @@ class Model:
 
         return super().__new__(cls)
     
+
+    @classmethod
+    def get_meta(cls):
+        meta = cls._meta()
+
+        for k, v in inspect.getmembers(cls.Meta):
+            if not k.startswith("__"):
+                setattr(meta, k, v)
+        
+        return meta
+    
     def _get_model_key(self) -> str:
-        return self.Meta.key or self.__class__.__name__
+        return self.key or self.get_meta().key or self.__class__.__name__
     
     def _parse_field_data(self, __name, __value):
         return self._fields[__name].parse(__value)

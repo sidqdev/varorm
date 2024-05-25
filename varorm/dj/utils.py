@@ -21,7 +21,7 @@ def configure_default_setting(default_settings: dict):
             setattr(settings, k, v)
 
 
-def create_fake_model(name: str):
+def create_fake_model(name: str, models):
     class FakeMeta:
         abstract            = not True
         app_label           = __name__.split('.')[-2]
@@ -33,6 +33,7 @@ def create_fake_model(name: str):
         app_config = ''
         model_name = name
         object_name = name
+
         def get_add_permission(self):    return 'add_%s'    % self.module_name
         def get_change_permission(self): return 'change_%s' % self.module_name
         def get_delete_permission(self): return 'delete_%s' % self.module_name
@@ -42,6 +43,7 @@ def create_fake_model(name: str):
             self.verbose_name_plural = verbose_plural or name
 
     class FakeModel:
+        varorm_models = models
         _meta = FakeMeta(name)
     
     return [FakeModel]
@@ -56,20 +58,39 @@ class FieldAdminRepresintation:
 
 
 def get_model_fields_represintation(cls): 
-        self = cls()
-        fields = []
-        for field_key, field in self._fields.items():
-            value = None
-            try:
-                value = getattr(self, field_key)
-                print(value)
-            except VarDoesNotExistException:
-                pass
-            fields.append(FieldAdminRepresintation(
-                verbose_name=field._verbose_name or field_key.capitalize(),
-                field_key=field_key,
-                value=value,
-                widget=field.widget(field_key, value)
-            ))
+    self = cls()
+    fields = []
+    for field_key, field in self._fields.items():
+        value = None
+        try:
+            value = getattr(self, field_key)
+        except VarDoesNotExistException:
+            pass
+        fields.append(FieldAdminRepresintation(
+            verbose_name=field._verbose_name or field_key.capitalize(),
+            field_key=field_key,
+            value=value,
+            widget=field.widget(field_key, value)
+        ))
 
-        return fields
+    return fields
+
+
+def has_django_model_permission(model, user):
+    varorm_models = model.varorm_models
+    for varorm_model in varorm_models:
+        if has_varorm_model_permission(varorm_model, user):
+            return True
+        
+    return False
+
+
+def has_varorm_model_permission(model, user):
+    if user.is_superuser:
+        return True
+    groups = model.get_meta().groups
+    if groups == "__all__":
+        return True
+    if groups is None:
+        return False
+    return bool(set(groups) & set([group.name for group in user.groups.all()]))

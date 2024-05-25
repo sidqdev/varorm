@@ -1,7 +1,9 @@
 ## varorm - variables orm with django admin support
 
 #### v0.1 - Basic models and Django admin support
-#### TODO - refactor django widgets, better type-hints, groups access support
+#### v0.1.1 - Add groups access to variables and verbose_name for django admin, setup key on init of model
+
+#### TODO - refactor django widgets, better type-hints
 ## Documentation
 
 ```python3
@@ -17,6 +19,10 @@ class TestModel(Model):
     b = fields.CharField(null=True)
     c = fields.FloatField()
 
+    class Meta: # optional
+        key = 'test' # key in storage for current model
+
+
 TestModel.connect(storage)
 
 print(TestModel().a) # >> 1
@@ -25,6 +31,9 @@ print(TestModel().c) # >> VarDoesNotExistException
 
 TestModel().a = 5
 print(TestModel().a) # >> 5
+
+# Also u can change key in time of using model:
+print(TestModel(key='test2').a) # >> 1
 
 storage.save() # for file base storages
 ```
@@ -39,6 +48,12 @@ class TestModel(Model):
     a = fields.IntegerField(default=1)
     b = fields.CharField(null=True)
     c = fields.FloatField(verbose_name="Test C")
+
+    class Meta: # optional
+        key = 'test' # key in storage for current model
+        groups = ['TestGroups'] # groups who have access to this model, __all__ for access to everyone
+        verbose_name = 'TestNameOfModel' # the name of model in django admin
+
 ```
 ### settings.py
 ```python3
