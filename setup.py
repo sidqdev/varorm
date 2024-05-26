@@ -14,7 +14,7 @@ project_urls = {
 
 setup(
     name='varorm',
-    version='0.1.1',
+    version='0.1.2',
     author='Sidq',
     author_email='abba.dmytro@gmail.com',
     description='Variable orm with django admin support',

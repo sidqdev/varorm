@@ -101,3 +101,30 @@ class RedisStorage(BaseStorage):
     def hset(self, key: str, hkey: str, value: Any):
         return self._connection.hset(key, hkey, value)
     
+
+class MongoStorage(BaseStorage):
+    def __init__(self, url: str = None, db_name: str = 'default', **kwargs) -> None:
+        import pymongo
+        if url is not None:
+            client = pymongo.MongoClient(url)
+        else:
+            client = pymongo.MongoClient(**kwargs)
+
+        self._db = client[db_name]
+
+    def hget(self, key: str, hkey: str) -> Any:
+        try:
+            val = self._db[key].find_one({"key": hkey})
+            assert val is not None
+        except:
+            raise VarDoesNotExistException
+
+        val = val['value']
+        if isinstance(val, bytes):
+            return val.decode()
+        
+        return val
+        
+    def hset(self, key: str, hkey: str, value: Any):
+        return self._db[key].replace_one({"key": hkey}, {"key": hkey, "value": value}, upsert=True)
+    
