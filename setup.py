@@ -14,7 +14,7 @@ project_urls = {
 
 setup(
     name='varorm',
-    version='0.1.2',
+    version='0.1.3',
     author='Sidq',
     author_email='abba.dmytro@gmail.com',
     description='Variable orm with django admin support',
@@ -27,6 +27,8 @@ setup(
         'Programming Language :: Python :: 3',
         'Operating System :: OS Independent',
     ],
+    package_data={'varorm.dj': ['templates/*.html']},
+    include_package_data=True,
     python_requires='>=3.6',
 )
 
