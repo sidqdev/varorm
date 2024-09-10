@@ -1,6 +1,6 @@
 import inspect
-
 from typing import Any
+
 from varorm.storage import BaseStorage
 from varorm.fields import Field
 from varorm.exceptions import VarDoesNotExistException

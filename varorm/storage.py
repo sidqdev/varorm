@@ -5,6 +5,7 @@ from typing import Any, Callable
 
 from varorm.exceptions import VarDoesNotExistException
 
+
 class BaseStorage:
     def hget(self, key: str, hkey: str) -> Any:
         raise Exception("need to override hget")
@@ -128,3 +129,20 @@ class MongoStorage(BaseStorage):
     def hset(self, key: str, hkey: str, value: Any):
         return self._db[key].replace_one({"key": hkey}, {"key": hkey, "value": value}, upsert=True)
     
+
+class DjangoDBStorage(BaseStorage):
+    def hget(self, key: str, hkey: str) -> Any:
+        from varorm.dj.models import DBStorage
+        row = DBStorage.objects.filter(key=key, hkey=hkey).first()
+        if row is None:
+            raise VarDoesNotExistException
+        
+        return row.value
+    
+    def hset(self, key: str, hkey: str, value: Any):
+        from varorm.dj.models import DBStorage
+        row = DBStorage.objects.filter(key=key, hkey=hkey).first() 
+        if row is None:
+            DBStorage(key=key, hkey=hkey, value=value).save()
+        else:
+            DBStorage.objects.filter(id=row.id).update(value=value)

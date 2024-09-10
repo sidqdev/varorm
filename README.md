@@ -3,6 +3,7 @@
 #### v0.1 - Basic models and Django admin support
 #### v0.1.1 - Add groups access to variables and verbose_name for django admin, setup key on init of model
 #### v0.1.2 - Add MongoStorage 
+#### v0.1.4 - New storage in django model
 
 #### TODO - refactor django widgets, better type-hints
 ## Documentation
