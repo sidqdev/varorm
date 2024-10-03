@@ -13,7 +13,13 @@ class BaseStorage:
     def hset(self, key: str, hkey: str, value: Any):
         raise Exception("need to override hset")
 
+    def get(self, key: str) -> dict:
+        raise Exception("need to override get")
 
+    def update(self, key: str, data: dict):
+        raise Exception("need to override update")
+    
+    
 class MemoryStorage(BaseStorage):
     def __init__(self) -> None:
         self._data = {}
@@ -32,6 +38,19 @@ class MemoryStorage(BaseStorage):
         self._data[key].update({
             hkey: value
         })
+    
+    def get(self, key: str) -> dict:
+        try:
+            return self._data[key]
+        except:
+            return dict()
+
+    def update(self, key: str, data: dict):
+        if key not in self._data:
+            self._data.update({
+                key: {}
+            })
+        self._data[key].update(data)
 
 
 class FileStorage(MemoryStorage):
@@ -64,6 +83,11 @@ class FileStorage(MemoryStorage):
     
     def hset(self, key: str, hkey: str, value: Any):
         super().hset(key, hkey, value)
+        if self._save_on_set:
+            self.save()
+    
+    def update(self, key: str, data: dict):
+        super().hset(key, data)
         if self._save_on_set:
             self.save()
 
@@ -102,6 +126,16 @@ class RedisStorage(BaseStorage):
     def hset(self, key: str, hkey: str, value: Any):
         return self._connection.hset(key, hkey, value)
     
+    def get(self, key: str) -> dict:
+        data = self._connection.hgetall(key)
+        if data is None:
+            return dict()
+        
+        return dict(map(lambda p: (p[0].decode(), p[1].decode()), data.items()))
+
+    def update(self, key: str, data: dict):
+        return self._connection.hset(key, mapping=data)
+    
 
 class MongoStorage(BaseStorage):
     def __init__(self, url: str = None, db_name: str = 'default', **kwargs) -> None:
@@ -129,6 +163,22 @@ class MongoStorage(BaseStorage):
     def hset(self, key: str, hkey: str, value: Any):
         return self._db[key].replace_one({"key": hkey}, {"key": hkey, "value": value}, upsert=True)
     
+    def get(self, key: str) -> dict:
+        try:
+            val = self._db[key]
+            assert val is not None
+        except:
+            return dict()
+
+        data = dict()
+        for row in val.find():
+            data[row['key']] = row['value']
+        return data
+    
+    def update(self, key: str, data: dict):
+        for hk, v in data.items():
+            self.hset(key, hk, v)
+    
 
 class DjangoDBStorage(BaseStorage):
     def hget(self, key: str, hkey: str) -> Any:
@@ -146,3 +196,15 @@ class DjangoDBStorage(BaseStorage):
             DBStorage(key=key, hkey=hkey, value=value).save()
         else:
             DBStorage.objects.filter(id=row.id).update(value=value)
+
+    def get(self, key: str) -> dict:
+        from varorm.dj.models import DBStorage
+        data = dict()
+        for row in DBStorage.objects.filter(key=key).all():
+            data[row.hkey] = row.value
+        return data
+
+    def update(self, key: str, data: dict):
+        for hk, v in data.items():
+            self.hset(key, hk, v)
+    

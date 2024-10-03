@@ -6,3 +6,6 @@ class UnsupportableDateFormatException(Exception):
 
 class UnsupportableDateTimeFormatException(Exception):
     pass
+
+class KeyNotFoundException(Exception):
+    pass

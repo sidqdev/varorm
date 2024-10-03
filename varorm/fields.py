@@ -72,18 +72,20 @@ class DateField(Field):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(date, *args, **kwargs)
 
-    def parse(self, value) -> bool:
+    def parse(self, value) -> date:
+        if isinstance(value, date):
+            return value
         try:
             return date.fromisoformat(value)
         except:
             pass
         try:
-            return date.fromordinal(value)
+            return date.fromordinal(int(value))
         except:
             pass
         
         try:
-            return date.fromtimestamp(value)
+            return date.fromtimestamp(float(value))
         except:
             pass
         
@@ -98,17 +100,19 @@ class DateTimeField(Field):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(datetime, *args, **kwargs)
 
-    def parse(self, value) -> bool:
+    def parse(self, value) -> datetime:
+        if isinstance(value, datetime):
+            return value
         try:
             return datetime.fromisoformat(value)
         except:
             pass
         try:
-            return datetime.fromordinal(value)
+            return datetime.fromordinal(int(value))
         except:
             pass
         try:
-            return datetime.fromtimestamp(value)
+            return datetime.fromtimestamp(float(value))
         except:
             pass
         
