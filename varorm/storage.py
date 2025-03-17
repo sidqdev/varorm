@@ -8,16 +8,16 @@ from varorm.exceptions import VarDoesNotExistException
 
 class BaseStorage:
     def hget(self, key: str, hkey: str) -> Any:
-        raise Exception("need to override hget")
+        raise NotImplementedError
     
     def hset(self, key: str, hkey: str, value: Any):
-        raise Exception("need to override hset")
+        raise NotImplementedError
 
     def get(self, key: str) -> dict:
-        raise Exception("need to override get")
+        raise NotImplementedError
 
     def update(self, key: str, data: dict):
-        raise Exception("need to override update")
+        raise NotImplementedError
     
     
 class MemoryStorage(BaseStorage):

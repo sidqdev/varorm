@@ -1,8 +1,6 @@
-from typing import Any
-from dataclasses import dataclass
 from django.conf import settings
-from varorm.exceptions import VarDoesNotExistException
-from varorm import widgets
+from varorm import Model
+from varorm.dj.foms import VarORMAdmin
 
 
 def import_by_path(name: str):
@@ -49,31 +47,11 @@ def create_fake_model(name: str, models):
     return [FakeModel]
 
 
-@dataclass
-class FieldAdminRepresintation:
-    verbose_name: str
-    field_key: str
-    value: Any
-    widget: widgets.Widget
-
-
-def get_model_fields_represintation(cls): 
-    self = cls()
-    fields = []
-    for field_key, field in self._fields.items():
-        value = None
-        try:
-            value = getattr(self, field_key)
-        except VarDoesNotExistException:
-            pass
-        fields.append(FieldAdminRepresintation(
-            verbose_name=field._verbose_name or field_key.capitalize(),
-            field_key=field_key,
-            value=value,
-            widget=field.widget(field_key, value)
-        ))
-
-    return fields
+def get_model_fields_represintation(model: Model): 
+    self: Model = model()
+    admin = self.get_meta().admin_model or VarORMAdmin
+    admin: VarORMAdmin = admin(model=self)
+    return admin.get_forms()
 
 
 def has_django_model_permission(model, user):

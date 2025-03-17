@@ -15,6 +15,7 @@ class Model:
         groups = None
         verbose_name = None
         init_load = False
+        admin_model = None
 
     def __new__(cls, key=None):
         assert cls._storage is not None
@@ -35,8 +36,6 @@ class Model:
         if self.get_meta().init_load:
             self._load_data()
         
-        super().__init__(*args, **kwargs)
-
     def _load_data(self):
         self._preloaded_data = self._storage.get(self._get_model_key())
             

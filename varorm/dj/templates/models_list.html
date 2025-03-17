@@ -19,8 +19,8 @@
                     {% csrf_token %}
                     <input hidden value="{{ model_name }}" id="dj.model_name" name="dj.model_name">
                     <input hidden value="{{ field.field_key }}" id="dj.field_key" name="dj.field_key">
-                    <td><label for="{{ field.field_key }}">{{ field.verbose_name }}</label></td>
-                    <td>{{ field.widget.input|safe }}</td>
+                    <td><label for="{{ field.field_key }}">{{ field.form.f.label }}</label></td>
+                    <td>{{ field.form.f|safe }}</td>
                     <td>
                         <input type="submit" class="default" value="Save" style="float: left;">
                         <!-- <input type="submit" class="delete-confirmation" value="delete" style="float: left;"> -->

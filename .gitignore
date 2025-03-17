@@ -1,3 +1,4 @@
 dist/
 varorm.egg-info/
 *.pyc
+.DS_Store

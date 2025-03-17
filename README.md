@@ -5,6 +5,9 @@
 #### v0.1.2 - Add MongoStorage 
 #### v0.1.4 - New storage in django model
 #### v0.1.5 - Fixed datetime and date fields, added init_load param and update method
+#### v0.1.6 - Bug fix
+#### v0.1.7 - Bug fix, refactoring of widgets
+
 
 #### TODO - refactor django widgets, better type-hints
 ## Documentation

@@ -1,6 +1,5 @@
 from typing import Callable, Any
 from datetime import date, datetime
-from varorm import widgets
 from varorm import exceptions
 
 
@@ -12,12 +11,14 @@ class Field:
             choices: tuple = None,
             default: Any = None,
             null: bool = False,
+            form_field_extra_context: dict = None
         ) -> None:
         self._base_type = base_type
         self._verbose_name = verbose_name
         self._choices = choices
         self._default = default
         self._null = null
+        self.form_field_extra_context = form_field_extra_context
 
     def parse(self, value):
         if isinstance(value, str) and value == '':
@@ -28,25 +29,26 @@ class Field:
         return value
     
 class IntegerField(Field):
-    widget = widgets.IntegerWidget
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(int, *args, **kwargs)
 
 
 class FloatField(Field):
-    widget = widgets.FloatWidget
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(float, *args, **kwargs)
 
 
 class BooleanField(Field):
-    widget = widgets.BooleanWidget
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(bool, *args, **kwargs)
 
     def parse(self, value) -> bool:
         if isinstance(value, str) and value == '':
             return None
+        if value == 'True':
+            return True
+        if value == 'False': 
+            return False
         return bool(int(value))
 
     def represent(self, value: bool):
@@ -54,21 +56,16 @@ class BooleanField(Field):
 
 
 class CharField(Field):
-    widget = widgets.CharWidget
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(str, *args, **kwargs)
 
 
 class TextField(Field):
-    widget = widgets.TextWidget
-
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(str, *args, **kwargs)
 
 
 class DateField(Field):
-    widget = widgets.DateWidget
-
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(date, *args, **kwargs)
 
@@ -83,7 +80,6 @@ class DateField(Field):
             return date.fromordinal(int(value))
         except:
             pass
-        
         try:
             return date.fromtimestamp(float(value))
         except:
@@ -96,7 +92,6 @@ class DateField(Field):
     
 
 class DateTimeField(Field):
-    widget = widgets.DateTimeWidget
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(datetime, *args, **kwargs)
 
