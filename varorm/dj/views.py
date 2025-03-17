@@ -7,7 +7,6 @@ from varorm.dj import utils
 def get_app_models(request: HttpRequest, app: str):
     if request.method == 'POST':
         data = dict(request.POST)
-        print(data)
         model_name = data['dj.model_name'][0]
         field_key = data['dj.field_key'][0]
         value = data['f'][0]
