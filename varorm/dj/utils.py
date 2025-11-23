@@ -54,15 +54,6 @@ def get_model_fields_represintation(model: Model):
     return admin.get_forms()
 
 
-def has_django_model_permission(model, user):
-    varorm_models = model.varorm_models
-    for varorm_model in varorm_models:
-        if has_varorm_model_permission(varorm_model, user):
-            return True
-        
-    return False
-
-
 def has_varorm_model_permission(model, user):
     if user.is_superuser:
         return True
@@ -71,4 +62,4 @@ def has_varorm_model_permission(model, user):
         return True
     if groups is None:
         return False
-    return bool(set(groups) & set([group.name for group in user.groups.all()]))
+    return user.groups.filter(name__in=groups).exists()

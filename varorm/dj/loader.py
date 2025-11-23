@@ -15,7 +15,6 @@ utils.configure_default_setting({
 storage = utils.import_by_path(settings.VARORM_STORAGE)(**settings.VARORM_STORAGE_CONFIG)
 assert isinstance(storage, BaseStorage)
 
-
 models = dict()
 
 for app in settings.INSTALLED_APPS:

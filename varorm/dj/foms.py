@@ -15,7 +15,7 @@ class VarORMAdmin:
     def __init__(self, model: Model):
         self.model = model
     
-    def _generate_form(self, field: fields.Field, field_key, initial, ) -> forms.Field:
+    def _generate_form(self, field: fields.Field, field_key, initial) -> forms.Field:
         context = dict(
             label=field._verbose_name or field_key.capitalize(),
             initial=initial,
@@ -75,7 +75,6 @@ class VarORMAdmin:
             form=Form
         )
         
-
     def get_forms(self):
         fields = []
         for field_key, field in self.model._fields.items():
