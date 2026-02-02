@@ -1,6 +1,8 @@
 from django.conf import settings
+from django.apps import apps
 from varorm import Model
-from varorm.dj.foms import VarORMAdmin
+from varorm.dj.forms import VarORMAdmin
+
 
 
 def import_by_path(name: str):
@@ -37,8 +39,8 @@ def create_fake_model(name: str, models):
         def get_delete_permission(self): return 'delete_%s' % self.module_name
         def __init__(self, name, verbose_name=None, verbose_plural=None):
             self.module_name         = name
-            self.verbose_name        = verbose_name or name
-            self.verbose_name_plural = verbose_plural or name
+            self.verbose_name        = verbose_name or apps.get_app_config(name).verbose_name
+            self.verbose_name_plural = verbose_plural or apps.get_app_config(name).verbose_name
 
     class FakeModel:
         varorm_models = models
