@@ -17,7 +17,7 @@ def get_app_models(request: HttpRequest, app: str):
 
     return render(request, "models_list.html", {
         "models": [
-            (v.get_meta().verbose_name or k, utils.get_model_fields_represintation(v)) 
+            (v.get_meta().verbose_name, k, utils.get_model_fields_represintation(v)) 
             for k, v in MODELS[app] 
             if utils.has_varorm_model_permission(v, request.user)
         ],

@@ -3,7 +3,7 @@
 
 {% block content %}
 
-{% for model_name, model in models%}
+{% for model_name, model_key, model in models%}
 <div style="padding-bottom: 15px;display: flex;justify-content: center;">
     <div style="display: flex;justify-content: center;width: 70%;border: 1px;border-style: solid;border-radius: 10px;">
         <table style="width: 80%;margin-bottom: 15px;">
@@ -17,7 +17,7 @@
             <tr>
                 <form method="post">
                     {% csrf_token %}
-                    <input hidden value="{{ model_name }}" id="dj.model_name" name="dj.model_name">
+                    <input hidden value="{{ model_key }}" id="dj.model_name" name="dj.model_name">
                     <input hidden value="{{ field.field_key }}" id="dj.field_key" name="dj.field_key">
                     <td><label for="{{ field.field_key }}">{{ field.form.f.label }}</label></td>
                     <td>{{ field.form.f|safe }}</td>
